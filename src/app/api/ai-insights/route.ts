@@ -59,6 +59,7 @@ function getExistingInsight(db: Database.Database, municipality_id:string): AIIn
     municipality_id: string;
     municipality_name: string;
     prefecture_name: string;
+    
     insight: string;
     explanation: string;
     strengths: string;
@@ -105,6 +106,20 @@ function saveInsight(db:Database.Database, insightData: AIInsightData){
   );
 }
 
+function buildInsightFallback(municipalityData: MunicipalityData) {
+  return {
+    insight: `${municipalityData.prefecture} ${municipalityData.name} のスコアに関する暫定的な所見です。AIの応答が得られなかったため、簡易概要を表示しています。後ほど再実行すると詳細が補完されます。`,
+    explanation: `${municipalityData.name}は${municipalityData.prefecture}に位置する自治体です。人口規模や産業構造などの要因がスコアに影響している可能性があります。`,
+    strengths: `比較的スコアの高い目標では、既存の施策や地域の特性が寄与している可能性があります。`,
+    improvements: `スコアの低い目標は、投資不足や制度面の制約など複合要因が想定されます。`,
+    recommendations: [
+      'データに基づく政策評価の継続',
+      '民間・NPOとの連携強化',
+      '重点目標へのリソース配分の最適化'
+    ]
+  };
+}
+
 //Gemini APIを利用してインサイトを作成
 async function generateAIInsight(municipalityData: MunicipalityData): Promise<{
   insight: string;
@@ -119,7 +134,8 @@ async function generateAIInsight(municipalityData: MunicipalityData): Promise<{
     throw new Error('GEMINI_API_KEY environment variable is not set');
   }
 
-  const url = 'https://generativelanguage.googleapis.com/v1/models/gemini-2.5-pro:generateContent?key=' + apiKey;
+  const primaryModel = 'gemini-2.5-pro';
+  const fallbackModel = 'gemini-1.5-flash';
 
   const prompt = `
   あなたは統計的因果推論と地理分析とSDGsの専門家です。
@@ -147,54 +163,60 @@ async function generateAIInsight(municipalityData: MunicipalityData): Promise<{
 必ずJSON形式のみで回答してください。
   `;
 
-  try{
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {text: prompt}
-            ]
+  const models = [primaryModel, fallbackModel];
+  for (let attempt = 0; attempt < models.length; attempt++) {
+    const model = models[attempt];
+    const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
+    try{
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {text: prompt}
+              ]
+            }
+          ]
+        }),
+      });
+
+      if(!response.ok) {
+        const errorText = await response.text();
+        console.warn(`Gemini API error (model=${model}): ${response.status} ${errorText}`);
+      } else {
+        const data = await response.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if(text){
+          let jsonText = text.trim();
+          if (jsonText.includes('```json')) {
+            jsonText = jsonText.split('```json')[1].split('```')[0].trim();
+          } else if (jsonText.includes('```')){
+            jsonText = jsonText.split('```')[1].split('```')[0].trim();
           }
-        ]
-      }),
-    });
-
-    if(!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Gemini API error: ${response.status} ${errorText}`);
+          try {
+            const parsed = JSON.parse(jsonText);
+            return {
+              insight: parsed.insight || '分析結果を生成できませんでした。',
+              explanation: parsed.explanation || '',
+              strengths: parsed.strengths || '',
+              improvements: parsed.improvements || '',
+              recommendations: Array.isArray(parsed.recommendations) ? parsed.recommendations : [],
+            };
+          } catch (e) {
+            console.error('AI insight JSON parse error:', e);
+            return buildInsightFallback(municipalityData);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('Gemini fetch failed:', error);
     }
-
-    const data = await response.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    if(!text) {
-      throw new Error("AI response is empty");
-    }
-
-    //jsonテキストを整形
-    let jsonText = text.trim();
-    if (jsonText.includes('```json')) {
-      jsonText = jsonText.split('```json')[1].split('```')[0].trim();
-    } else if (jsonText.includes('```')){
-      jsonText = jsonText.split('```')[1].split('```')[0].trim();
-    }
-
-    const parsed = JSON.parse(jsonText);
-
-    return {
-      insight: parsed.insight || '分析結果を生成できませんでした。',
-      explanation: parsed.explanation || '',
-      strengths: parsed.strengths || '',
-      improvements: parsed.improvements || '',
-      recommendations: Array.isArray(parsed.recommendations) ? parsed.recommendations : [],
-    };
-  } catch (error) {
-    console.error('Error generating AI insight:', error);
-      throw new Error('AI分析の生成に失敗しました')
+    await new Promise(r => setTimeout(r, 800));
   }
+  // 全試行失敗時はフォールバック
+  return buildInsightFallback(municipalityData);
 }
 
 
