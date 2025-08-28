@@ -14,6 +14,7 @@ import {
 } from 'chart.js';
 import { getRegionByPrefecture } from './municipality/region-mapping';
 import AIInsight from './AIInsight';
+import FactorDecomposition from './FactorDecomposition';
 
 ChartJS.register(
   CategoryScale,
@@ -306,9 +307,7 @@ export default function DashboardPage(){
                                 </div>
 
                                 {/* 要因分解 */}
-                                <div className="bg-white rounded-xl shadow-sm p-6">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-4">要因分解</h3>
-                                </div>
+                                <FactorDecomposition />
 
 
                             </div>
