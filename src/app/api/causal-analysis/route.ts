@@ -26,95 +26,45 @@ interface CausalAnalysisResponse {
   effectInterpretation: string;
 }
 
-// t分布の累積分布関数の近似計算（正則化不完全ベータを使用）
-function tCDF(t: number, df: number): number {
-  if (!isFinite(t) || df <= 0) return NaN;
-  if (t === 0) return 0.5;
-  const x = df / (df + t * t);
-  const a = df / 2;
-  const b = 0.5;
-  const Ix = incompleteBeta(a, b, x); // 正則化不完全ベータ関数 I_x(a,b)
-  // 参考: https://dl.acm.org/doi/10.1145/263867.263872 （Numerical Recipes 実装と同様）
-  return t > 0 ? 1 - 0.5 * Ix : 0.5 * Ix;
-}
-
-// 不完全ベータ関数の近似計算
-function incompleteBeta(a: number, b: number, x: number): number {
-  if (x === 0) return 0;
-  if (x === 1) return 1;
+// 簡略化されたt検定用のp値計算（統計的有意性判定用）
+function calculatePValue(tStatistic: number, degreesOfFreedom: number): number {
+  const absT = Math.abs(tStatistic);
   
-  // 連分数展開による近似
-  const bt = Math.exp(
-    gammaLn(a + b) - gammaLn(a) - gammaLn(b) + 
-    a * Math.log(x) + b * Math.log(1 - x)
-  );
-  
-  if (x < (a + 1) / (a + b + 2)) {
-    return bt * betacf(a, b, x) / a;
-  } else {
-    return 1 - bt * betacf(b, a, 1 - x) / b;
-  }
-}
-
-// ガンマ関数の対数の近似計算
-function gammaLn(x: number): number {
-  const cof = [
-    76.18009172947146, -86.50532032941677, 24.01409824083091,
-    -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5
-  ];
-  
-  let ser = 1.000000000190015;
-  const xx = x;
-  let y = xx;
-  let tmp = xx + 5.5;
-  tmp -= (xx + 0.5) * Math.log(tmp);
-  
-  for (let j = 0; j <= 5; j++) {
-    ser += cof[j] / ++y;
+  // 自由度が大きい場合は正規分布で近似
+  if (degreesOfFreedom >= 30) {
+    return 2 * (1 - normalCDF(absT));
   }
   
-  return -tmp + Math.log(2.5066282746310005 * ser / xx);
-}
-
-// 連分数の計算
-function betacf(a: number, b: number, x: number): number {
-  const maxIterations = 100;
-  const eps = 3.0e-7;
-  const fpmin = 1.0e-30;
+  // 小サンプル用の簡易t分布近似
+  // プログラミングコンテスト向けに実用的な精度で簡略化
+  const x = degreesOfFreedom / (degreesOfFreedom + absT * absT);
+  let p = Math.pow(x, degreesOfFreedom / 2);
   
-  const qab = a + b;
-  const qap = a + 1;
-  const qam = a - 1;
-  let c = 1;
-  let d = 1 - qab * x / qap;
-  
-  if (Math.abs(d) < fpmin) d = fpmin;
-  d = 1 / d;
-  let h = d;
-  
-  for (let m = 1; m <= maxIterations; m++) {
-    const m2 = 2 * m;
-    let aa = m * (b - m) * x / ((qam + m2) * (a + m2));
-    d = 1 + aa * d;
-    if (Math.abs(d) < fpmin) d = fpmin;
-    c = 1 + aa / c;
-    if (Math.abs(c) < fpmin) c = fpmin;
-    d = 1 / d;
-    h *= d * c;
-    
-    aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
-    d = 1 + aa * d;
-    if (Math.abs(d) < fpmin) d = fpmin;
-    c = 1 + aa / c;
-    if (Math.abs(c) < fpmin) c = fpmin;
-    d = 1 / d;
-    const del = d * c;
-    h *= del;
-    
-    if (Math.abs(del - 1) < eps) break;
+  // より正確な近似のための補正
+  if (degreesOfFreedom <= 10) {
+    p *= (1 + 0.5 * absT * absT / degreesOfFreedom);
   }
   
-  return h;
+  return 2 * p;
+}
+
+// 標準正規分布の累積分布関数の近似
+function normalCDF(x: number): number {
+  // Abramowitz and Stegun approximation
+  const sign = x >= 0 ? 1 : -1;
+  x = Math.abs(x);
+  
+  const a1 =  0.254829592;
+  const a2 = -0.284496736;
+  const a3 =  1.421413741;
+  const a4 = -1.453152027;
+  const a5 =  1.061405429;
+  const p  =  0.3275911;
+  
+  const t = 1.0 / (1.0 + p * x);
+  const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+  
+  return 0.5 * (1.0 + sign * y);
 }
 
 // 因果推論分析の実行
@@ -204,7 +154,7 @@ function performCausalAnalysis(
       pValue = equal ? 1 : 1e-12; // 分散ゼロ時: 完全一致ならp=1, それ以外は非常に小さいp
     } else {
       tStatistic = (targetDiff - controlMean) / se;
-      pValue = 2 * (1 - tCDF(Math.abs(tStatistic), degreesOfFreedom));
+      pValue = calculatePValue(tStatistic, degreesOfFreedom);
     }
     const significance = pValue < 0.05 ? "有意" : "有意でない";
     

@@ -1,6 +1,6 @@
 import path from "path";
 import Database from "better-sqlite3";
-import { MunicipalityData } from "@/app/sdgs/municipality/prefectureselection";
+import { MunicipalityData } from "@/app/sdgs/types";
 import { NextRequest, NextResponse } from "next/server";
 
 

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getSdgsGoalsForChart } from '../sdgs/sdgs-data';
 
 interface PolicyAnalysisResult {
   municipality: string;
@@ -79,28 +80,13 @@ interface CausalAnalysisResponse {
   effectInterpretation: string;
 }
 
-const SDG_GOALS = [
-  { id: 1, title: "貧困をなくそう", image: "/sdgs_goals_icons/1.png" },
-  { id: 2, title: "飢餓をゼロに", image: "/sdgs_goals_icons/2.png" },
-  { id: 3, title: "すべての人に健康と福祉を", image: "/sdgs_goals_icons/3.png" },
-  { id: 4, title: "質の高い教育をみんなに", image: "/sdgs_goals_icons/4.png" },
-  { id: 5, title: "ジェンダー平等を実現しよう", image: "/sdgs_goals_icons/5.png" },
-  { id: 6, title: "安全な水とトイレを世界中に", image: "/sdgs_goals_icons/6.png" },
-  { id: 7, title: "エネルギーをみんなに そしてクリーンに", image: "/sdgs_goals_icons/7.png" },
-  { id: 8, title: "働きがいも経済成長も", image: "/sdgs_goals_icons/8.png" },
-  { id: 9, title: "産業と技術革新の基盤をつくろう", image: "/sdgs_goals_icons/9.png" },
-  { id: 10, title: "人や国の不平等をなくそう", image: "/sdgs_goals_icons/10.png" },
-  { id: 11, title: "住み続けられるまちづくりを", image: "/sdgs_goals_icons/11.png" },
-  { id: 12, title: "つくる責任 つかう責任", image: "/sdgs_goals_icons/12.png" },
-  { id: 13, title: "気候変動に具体的な対策を", image: "/sdgs_goals_icons/13.png" },
-  { id: 14, title: "海の豊かさを守ろう", image: "/sdgs_goals_icons/14.png" },
-  { id: 15, title: "陸の豊かさも守ろう", image: "/sdgs_goals_icons/15.png" },
-  { id: 16, title: "平和と公正をすべての人に", image: "/sdgs_goals_icons/16.png" },
-  { id: 17, title: "パートナーシップで目標を達成しよう", image: "/sdgs_goals_icons/17.png" }
-];
-
 export default function PolicyPage() {
   const [selectedGoal, setSelectedGoal] = useState<number | null>(null);
+  const SDG_GOALS = getSdgsGoalsForChart().map(goal => ({
+    id: goal.id,
+    title: goal.title,
+    image: `/sdgs_goals_icons/${goal.id}.png`
+  }));
   const [analysisData, setAnalysisData] = useState<PolicyAnalysisResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [policyResearch, setPolicyResearch] = useState<PolicyResearchResponse | null>(null);
@@ -236,7 +222,7 @@ export default function PolicyPage() {
     const controlMunicipalities = similarMunicipalities.similarMunicipalities
       .filter(similar => !excludedMunicipalities.includes(similar.municipality))
       .map(similar => similar.municipality)
-      .slice(0, 15); // 上位15件を使用
+      .slice(0, 20); // 上位20件を使用 
     
     if (controlMunicipalities.length < 3) {
       alert('対照群が少なすぎます。除外する市区町村を減らしてください。');

@@ -1,60 +1,41 @@
 "use client";
 import Link from 'next/link';
 import { useState } from 'react';
-import RadarChart from './radar_chart';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
-  Title,
   Tooltip,
   Legend,
 } from 'chart.js';
 import { getRegionByPrefecture } from './municipality/region-mapping';
+import { getSdgsGoalsForChart } from './sdgs-data';
 import AIInsight from './AIInsight';
 import FactorDecomposition from './FactorDecomposition';
+import PrefectureSelection from './municipality/prefectureselection';
+import RadarChart from './radar_chart';
+import { MunicipalityData } from './types';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
-  Title,
   Tooltip,
   Legend
 );
-import PrefectureSelection from './municipality/prefectureselection';
-import { getSdgsGoalsForChart } from './sdgs-data';
-
-type MunicipalityData = {
-  id: string;
-  name: string;
-  population: number;
-  area: number;
-  prefecture: string;
-  scores: {
-    overall: number;
-    goals: number[];
-  };
-};
-
-
 
 export default function DashboardPage(){
     const [currentData, setCurrentData] = useState<MunicipalityData | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const sdgsGoals = getSdgsGoalsForChart();
 
-    //統計計算(必要か？？)
     const getStatus = (score: number) => {
-    if (score >= 85) return { status: "優秀", color: "text-green-600", bgColor: "bg-green-100" };
-    if (score >= 70) return { status: "順調", color: "text-blue-600", bgColor: "bg-blue-100" };
-    return { status: "要改善", color: "text-orange-600", bgColor: "bg-orange-100" };
+        if (score >= 85) return { status: "優秀", color: "text-green-600", bgColor: "bg-green-100" };
+        if (score >= 70) return { status: "順調", color: "text-blue-600", bgColor: "bg-blue-100" };
+        return { status: "要改善", color: "text-orange-600", bgColor: "bg-orange-100" };
     };
-
-
-    //チャートデータを用意
     const getMunicipalityChartData = () => {
         if (!currentData) return null;
 
@@ -75,19 +56,12 @@ export default function DashboardPage(){
 
     const chartData = getMunicipalityChartData();
 
-//市区町村選択時の処理（PrefectureSelectionコンポーネントから直接データを受け取る処置）
-    const handleMunicipalitySelect = async (municipality:MunicipalityData | null) => {
-        if(municipality) {
+    const handleMunicipalitySelect = (municipality: MunicipalityData | null) => {
+        if (municipality) {
             setIsLoading(true);
-            try{
-                setCurrentData(municipality);
-            } catch(error){
-                console.error('Failed to set municipality data:', error);
-                setCurrentData(municipality);
-            } finally{
-                setIsLoading(false);
-            }
-        } else{
+            setCurrentData(municipality);
+            setIsLoading(false);
+        } else {
             setCurrentData(null);
         }
     };
@@ -142,7 +116,7 @@ export default function DashboardPage(){
                         </div>
                     </div>
                 </div>
-                {/*市区町村が未選択の時の案内（！！用改善！！） */}
+                {/* 市区町村未選択時の案内 */}
                 {!currentData && (
                     <div className="text-center py-16">
                         <div className="max-w-md mx-auto">
@@ -319,8 +293,6 @@ export default function DashboardPage(){
                     </div>
                 )}
             </div>
-
-            
         </div>
 
     )

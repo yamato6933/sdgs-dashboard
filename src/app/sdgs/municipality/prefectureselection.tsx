@@ -1,18 +1,7 @@
 "use client"
 import { useState,useEffect,useRef} from "react";
 import { getAllRegions, getPrefectureByRegion, getRegionByPrefecture, type RegionData } from './region-mapping';
-
-export type MunicipalityData = {
-  id: string;
-  name: string;
-  population: number;
-  area: number;
-  prefecture: string;
-  scores: {
-    overall: number;
-    goals: number[];
-  };
-};
+import { MunicipalityData } from '../types';
 
 export type PrefectureData = Record<string,MunicipalityData[]>;
 

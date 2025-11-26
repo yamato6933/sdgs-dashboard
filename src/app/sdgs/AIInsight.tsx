@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { MunicipalityData} from "./municipality/prefectureselection";
+import { MunicipalityData} from "./types";
 
 interface AIInsightProps{
     municipalityData: MunicipalityData | null;

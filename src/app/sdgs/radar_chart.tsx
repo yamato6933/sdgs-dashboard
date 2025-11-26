@@ -9,7 +9,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { MunicipalityData} from './municipality/prefectureselection';
+import { MunicipalityData} from './types';
 import { getSdgsGoalsForChart } from "./sdgs-data";
 
 
@@ -121,15 +121,7 @@ export default function RadarChart( {municipalityData , className = ""}:RadarCha
     },
   };
 
-  //スコアに基づく総合的な評価（！！要検討！！）
-  const getOverallAssessment = (score: number) => {
-    if (score >= 85) return { label: "優秀", color: "text-green-600", bgColor: "bg-green-100" };
-    if (score >= 70) return { label: "順調", color: "text-blue-600", bgColor: "bg-blue-100" };
-    if (score >= 50) return { label: "平均的", color: "text-yellow-600", bgColor: "bg-yellow-100" };
-    return { label: "要改善", color: "text-red-600", bgColor: "bg-red-100" };
-  };
 
-  const assessment = getOverallAssessment(municipalityData.scores.overall);
 
     // 最も高いスコアと最も低いスコアを特定する
   const scores = municipalityData.scores.goals;
@@ -178,6 +170,4 @@ export default function RadarChart( {municipalityData , className = ""}:RadarCha
       </div>
     </div>
   )
-
 }
-
