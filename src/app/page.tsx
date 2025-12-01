@@ -6,7 +6,6 @@ import { SDGS_GOALS } from './sdgs/sdgs-data';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 
-
 export default function Home(){
   const [hoveredGoal, setHoveredGoal] = useState<number | null>(null);
   

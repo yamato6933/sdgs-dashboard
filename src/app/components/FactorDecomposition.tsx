@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { goalFeatures, GoalId, getAllGoals } from './feature-factors';
-import { getSdgsGoalsForChart } from './sdgs-data';
+import { goalFeatures, GoalId, getAllGoals } from '../sdgs/feature-factors';
+import { getSdgsGoalsForChart } from '../sdgs/sdgs-data';
 
 interface FactorDecompositionProps {
   className?: string;
