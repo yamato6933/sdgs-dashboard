@@ -5,17 +5,21 @@ import { useState } from 'react';
 import { SDGS_GOALS } from './sdgs/sdgs-data';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
+import { Sidebar } from './components/Sidebar';
 
 export default function Home(){
   const [hoveredGoal, setHoveredGoal] = useState<number | null>(null);
   
   return(
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
-      <Header />
+    <>
+    <div className="min-h-screen flex bg-gradient-to-br from-blue-50 to-green-50">
+      <Sidebar />
+      <div className="flex-1 flex flex-col min-h-screen">
+        <Header />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* VS Code風のレイアウト */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-20">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* VS Code風のレイアウト */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-20">
           {/* 左側: ダッシュボードの説明 */}
           <div className="space-y-8 order-2 lg:order-1">
             <div className="space-y-4">
@@ -24,9 +28,9 @@ export default function Home(){
                   SDGs 可視化プラットフォーム
                 </span>
               </div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+              <h3 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
                 JYR. ポータル
-              </h1>
+              </h3>
             </div>
             <div className="space-y-6">
               <p className="text-lg sm:text-xl text-gray-600 leading-relaxed">
@@ -251,7 +255,9 @@ export default function Home(){
         </div>
       </div>
       </main> 
-      <Footer />
+      </div>
     </div>
+    <Footer />
+    </>
   )
 }

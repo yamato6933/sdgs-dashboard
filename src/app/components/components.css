@@ -1,0 +1,4 @@
+.SidebarList #active {
+    background-color: oklab(95.14200000000001% -0.01369 -0.02106 / 0.638);
+    font-weight: bold;
+}

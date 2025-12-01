@@ -4,6 +4,9 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getSdgsGoalsForChart } from '../sdgs/sdgs-data';
+import { Header } from '../components/Header';
+import { Footer } from '../components/Footer';
+import { Sidebar } from '../components/Sidebar';
 
 interface PolicyAnalysisResult {
   municipality: string;
@@ -258,20 +261,11 @@ export default function PolicyPage() {
   };
 
   return (
+    <>
+    <div className="min-h-screen flex bg-gradient-to-br from-blue-50 to-green-50">
+    <Sidebar />
     <div className="min-h-screen bg-gray-50">
-      <header className="sticky top-0 z-50 backdrop-blur bg-white/70 border-b">
-        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/sdgs-logo.png" alt="SDGs" width={28} height={28} />
-            <span className="font-bold text-blue-700">SDGs Dashboard</span>
-          </Link>
-          <nav className="hidden sm:flex items-center gap-6 text-sm">
-            <Link href="/" className="text-gray-600 hover:text-gray-900">ホーム</Link>
-            <Link href="/policy" className="text-blue-600 font-semibold">政策分析</Link>
-            <Link href="/sdgs" className="text-gray-600 hover:text-gray-900">データ</Link>
-          </nav>
-        </div>
-      </header>
+      <Header />
       <main className="mx-auto max-w-7xl px-6 py-6">
         <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 border mb-8">
           <div className="px-6 py-10 text-center">
@@ -782,5 +776,8 @@ export default function PolicyPage() {
       )}
       </main>
     </div>
+    </div>
+    <Footer />
+    </>
   );
 }

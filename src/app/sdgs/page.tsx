@@ -19,6 +19,7 @@ import { SelectRegion } from '../components/SelectRegion';
 import { DataInfo } from '../components/BasicInfo';
 import { ScoreGrid } from '../components/ScoreGrid';
 import AIInsight from '../components/AIInsight';
+import { Sidebar } from '../components/Sidebar';
 
 ChartJS.register(
   CategoryScale,
@@ -69,8 +70,11 @@ export default function DashboardPage(){
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-            
+        <>
+        <div className="min-h-screen flex bg-gradient-to-br from-blue-50 to-green-50">
+            <Sidebar />
+            {/*<div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">*/}
+            <div className="flex-1 flex flex-col min-h-screen">
             <Header />
 
             <div className="max-w-7xl mx-auto px-4 py-8">
@@ -130,9 +134,11 @@ export default function DashboardPage(){
                     </div>
                 )}
             </div>
-
-            <Footer />
+            </div>
         </div>
+        <Footer />
+        </>
+
 
     )
 }
