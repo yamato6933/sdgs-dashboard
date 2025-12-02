@@ -102,9 +102,9 @@ export default function DashboardPage(){
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                             <div className="bg-white rounded-xl shadow-sm p-4 lg:col-span-2">
                                     <h3 className="text-lg font-bold text-gray-900 text-center">SDGs目標別スコア</h3>
-                                    {chartData && (<Bar 
-                                        data={chartData}
-                                        options={{
+                                    {chartData && (
+                                        <Bar data={chartData}
+                                            options={{
                                             responsive:true,
                                             plugins:{
                                                 legend:{display:false},

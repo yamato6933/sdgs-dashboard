@@ -31,7 +31,6 @@ export function ScoreGrid({ sdgsGoals, currentData }: { sdgsGoals: { id: number;
                                         {status.status}
                                      </span>*/}
                                 </div>
-                                {/*<h4 className="font-medium text-sm text-gray-900 mb-3 leading-tight">{goal.title}</h4>*/}
 
                                 <div className="mb-2">
                                     <div className="flex justify-between text-sm mb-1">
