@@ -33,6 +33,7 @@ export default function Home(){
               </h3>
             </div>
             <div className="space-y-6">
+              <h2 className="text-2xl font-semibold text-gray-800">可視化モード</h2>
               <p className="text-lg sm:text-xl text-gray-600 leading-relaxed">
                 日本全国の市区町村ごとのSDGs（持続可能な開発目標）の達成度をスコアとして可視化し、
                 それぞれの地域における政策の効果や課題を一目で把握できるダッシュボードです。
@@ -84,7 +85,7 @@ export default function Home(){
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
-                    <h3 className="font-semibold text-gray-800">政策効果</h3>
+                    <h3 className="font-semibold text-gray-800">政策提案</h3>
                   </div>
                   <p className="text-sm text-gray-600">政策の効果測定と課題の特定</p>
                 </div>

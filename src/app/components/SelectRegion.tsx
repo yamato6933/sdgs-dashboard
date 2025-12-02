@@ -63,13 +63,6 @@ export function SelectRegion({ currentData, onMunicipalitySelect }: { currentDat
                         </div>
                     </div>
                 )}
-                {/*ローディング中の表示
-                {isLoading && (
-                    <div className="text-center py-16">
-                        <div className="animate-spin w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-                        <p className="text-gray-600">データを読み込み中...</p>
-                    </div>
-                )}*/}
         </>
     )
 }

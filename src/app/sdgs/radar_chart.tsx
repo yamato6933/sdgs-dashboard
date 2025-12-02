@@ -85,6 +85,8 @@ export default function RadarChart( {municipalityData , className = ""}:RadarCha
     },
     scales: {
       r: {
+        min: 0,
+        max: 100,
         angleLines: {
           display: true,
           color: "rgba(0, 0, 0, 0.1)",
@@ -99,7 +101,6 @@ export default function RadarChart( {municipalityData , className = ""}:RadarCha
           color: "#374151",
         },
         ticks: {
-          beginAtZero: true,
           max: 100,
           stepSize: 20,
           color: "#6B7280",
@@ -120,53 +121,15 @@ export default function RadarChart( {municipalityData , className = ""}:RadarCha
       },
     },
   };
-
-
-
-    // 最も高いスコアと最も低いスコアを特定する
-  const scores = municipalityData.scores.goals;
-  const maxScore = Math.max(...scores);
-  const minScore = Math.min(...scores);
-  const maxIndex = scores.indexOf(maxScore);
-  const minIndex = scores.indexOf(minScore);
-
   return (
-    <div className={`bg-white rounded-xl shadow-sm p-6 ${className}`}>
-      <div className="felx items-center justify-between mb-6">
+    <div className={`bg-white rounded-xl shadow-sm p-4 ${className}`}>
+      <div className="items-center justify-between">
         <div>
-          <h3 className="text-lg font-bold text-gray-900">スコアレーダーチャート</h3>
-          <p className="text-sm text-gray-600">17のゴールのスコアを総合的に可視化します</p>
+          <h3 className="text-lg font-bold text-gray-900 text-center">スコアレーダーチャート</h3>
         </div>
       </div>
-        {/* レーダーチャート */}
-      <div className="relative h-96 mb-6">
+      <div className="relative h-80 w-full">
         <Radar data={radarData} options={options} />
-      </div>
-      {/*最高スコアと最低スコアの表示 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200">
-        <div className="flex items-center space-x-3">
-          <div className="w-3 h-3 rounded-full bg-green-500"></div>
-          <div className="flex-1">
-            <div className="text-sm font-medium text-gray-900">
-              最高スコア: SDG{sdgsGoals[maxIndex].id}
-            </div>
-            <div className="text-xs text-gray-600">
-              {sdgsGoals[maxIndex].title} ({maxScore}%)
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex items-center space-x-3">
-          <div className="w-3 h-3 rounded-full bg-red-500"></div>
-          <div className="flex-1">
-            <div className="text-sm font-medium text-gray-900">
-              最低スコア: SDG{sdgsGoals[minIndex].id}
-            </div>
-            <div className="text-xs text-gray-600">
-              {sdgsGoals[minIndex].title} ({minScore}%)
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   )

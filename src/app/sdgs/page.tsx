@@ -20,6 +20,8 @@ import { DataInfo } from '../components/BasicInfo';
 import { ScoreGrid } from '../components/ScoreGrid';
 import AIInsight from '../components/AIInsight';
 import { Sidebar } from '../components/Sidebar';
+import { useStateStore } from '../store/useStateStore';
+
 
 ChartJS.register(
   CategoryScale,
@@ -69,37 +71,38 @@ export default function DashboardPage(){
         }
     };
 
+    const {sidebarOpen, setSidebarOpen} = useStateStore();
+    
+      function OperateSidebar(){
+        setSidebarOpen(true);
+      }
+
     return (
         <>
         <div className="min-h-screen flex bg-gradient-to-br from-blue-50 to-green-50">
             <Sidebar />
             {/*<div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">*/}
             <div className="flex-1 flex flex-col min-h-screen">
-            <Header />
+                <Header />
 
             <div className="max-w-7xl mx-auto px-4 py-8">
-                {/*市区町村選択カード */}
-                <SelectRegion currentData={currentData} onMunicipalitySelect={handleMunicipalitySelect}/>
+                {!currentData && (
+                    <SelectRegion currentData={currentData} onMunicipalitySelect={handleMunicipalitySelect}/>
+                    )}
                 {currentData && !isLoading && (
-                    <div className="space-y-8">
-
-                    {/*基本情報表示 */}
-                        <DataInfo {...currentData} />
-
+                    <div className="space-y-6">
+                        {/*基本情報表示 */}
+                        <DataInfo currentData={currentData} onReset={() => setCurrentData(null)} />
                     {/*選択した市区町村のスコア表示 */}
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        {/* スコアグリッド表示 */}
+                    {/*<div className="bg-white rounded-xl shadow-sm p-6">
                         <ScoreGrid sdgsGoals={sdgsGoals} currentData={currentData} />
                     </div>
-                        {/*レーダーチャート */}
-                        <RadarChart municipalityData={currentData} className='mb-8'/>
+                        <RadarChart municipalityData={currentData} className='mb-8'/>}
                         {/*その他*/}
-                        {chartData && (
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                {/*棒グラフ表示 */}
-                                <div className="bg-white rounded-xl shadow-sm p-6">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-4">SDGs目標別スコア</h3>
-                                    <Bar 
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div className="bg-white rounded-xl shadow-sm p-4 lg:col-span-2">
+                                    <h3 className="text-lg font-bold text-gray-900 text-center">SDGs目標別スコア</h3>
+                                    {chartData && (<Bar 
                                         data={chartData}
                                         options={{
                                             responsive:true,
@@ -118,19 +121,23 @@ export default function DashboardPage(){
                                                 },
                                             },
                                         }}
-                                    />
-                                </div>
-
-                                {/* 要因分解 */}
-                                <FactorDecomposition />
-
-
+                                    />)}
                             </div>
-                        )}
+                                <RadarChart municipalityData={currentData} className=''/>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <FactorDecomposition />
+
+                            <AIInsight municipalityData={currentData} />
+                        </div>
+
+                        <div className="bg-white rounded-xl shadow-sm p-6">
+                            <ScoreGrid sdgsGoals={sdgsGoals} currentData={currentData} />
+                        </div>
 
 
-                        {/* AIインサイト */}
-                        <AIInsight municipalityData={currentData} />
+                        
                     </div>
                 )}
             </div>
@@ -138,7 +145,5 @@ export default function DashboardPage(){
         </div>
         <Footer />
         </>
-
-
     )
 }

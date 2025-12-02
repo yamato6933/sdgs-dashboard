@@ -1,19 +1,25 @@
 import { MunicipalityData } from "../sdgs/types";
-
-export function DataInfo(currentData: MunicipalityData | null) {
+type DataInfoProps = {
+    currentData: MunicipalityData;
+    onReset: () => void;
+    };
+export function DataInfo({ currentData, onReset }: DataInfoProps) {
     const getStatus = (score: number) => {
         if (score >= 85) return { status: "優秀", color: "text-green-600", bgColor: "bg-green-100" };
         if (score >= 70) return { status: "順調", color: "text-blue-600", bgColor: "bg-blue-100" };
         return { status: "要改善", color: "text-orange-600", bgColor: "bg-orange-100" };
     };
+
     if(currentData){
         return(
         <>
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">{currentData.prefecture} {currentData.name} SDGsスコア</h2>
+        <div className="bg-white rounded-xl shadow-sm p-2 mb-4">
+            <div className="flex items-center justify-between mb-2">
+                <h2 className="text-2xl font-bold text-gray-900 text-center">{currentData.prefecture} {currentData.name} SDGsスコア</h2>
                     <div className="text-right">
-                        <div className="text-sm text-gray-600">データベースから取得</div>
+                        <button className="text-sm text-gray-500 underline" onClick={ onReset }>
+                            別の市区町村を選択
+                        </button>
                         <div className="font-semibold text-green-600">2020年データ</div>
                     </div>
             </div>
