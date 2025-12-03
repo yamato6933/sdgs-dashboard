@@ -13,7 +13,7 @@ export function Sidebar(){
     return(
         <>
             {sidebarOpen && (
-                <div className="w-64 bg-white p-6">
+                <div className="sticky top-0 h-screen z-40 overflow-y-auto w-64 bg-white p-6">
                     <div className="text-2xl flex font-bold text-gray-900 mb-8 justify-between items-center">
                         <h3>JYR. ポータル</h3>
                         <button onClick={() => setSidebarOpen(false)} className="text-gray-500 hover:text-gray-900">
