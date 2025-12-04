@@ -36,6 +36,10 @@ export function Header(){
                     ${pathname === '/compare' ? 'text-lg font-bold' : 'text-sm font-medium'}`}>
                   比較モード
                 </Link>
+                <Link href="/policymaking" className={`text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md transition-colors
+                    ${pathname === '/policymaking' ? 'text-lg font-bold' : 'text-sm font-medium'}`}>
+                  政策立案
+                </Link>
                 <Link href="/policy" className={`text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md transition-colors
                     ${pathname === '/policy' ? 'text-lg font-bold' : 'text-sm font-medium'}`}>
                   政策効果

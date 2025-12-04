@@ -21,6 +21,14 @@ export default function Home(){
               <IntroContents introData={introData} id={1} />
               <IntroImage introData={introData} id={1} />
           </div>
+
+
+          {/* 地域比較ページの紹介セクション */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-20">
+            <IntroImage introData={introData} id={3} />
+            <IntroContents introData={introData} id={3} />
+          </div>
+          
           
 
           {/* 政策効果ページの紹介セクション */}

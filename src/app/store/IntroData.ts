@@ -1,5 +1,3 @@
-import { title } from "process";
-
 export const introData: IntroData[] = [
     {
         id: 1,
@@ -37,9 +35,22 @@ export const introData: IntroData[] = [
     },
     {
         id: 3,
-        title: "比較モードの使い方",
-        content: "比較モードでは、複数の市区町村を選択してそのSDGsスコアを比較できます。異なる地域の政策効果や課題を分析し、ベストプラクティスを見つけるのに役立ちます。"
-    } ];
+        title: "地域間比較モード",
+        content: "複数の市区町村を選択し、SDGsスコアや政策効果を比較分析できるモードです。地域間の違いや共通点を把握し、効果的な政策立案に役立てます。",
+        subtitle1:"マルチセレクト",
+        subtitle2:"比較分析",
+        subtitle3:"視覚化ツール",
+        subtitle4:"インサイト抽出",
+        description1:"複数の市区町村を同時に選択し、SDGsスコアや政策効果を比較できます。",
+        description2:"選択した地域間でのスコアや政策効果の違いを詳細に分析します。",
+        description3:"棒グラフやレーダーチャートなど、多様な視覚化ツールを提供し、比較結果をわかりやすく表示します。",
+        description4:"比較分析から得られた洞察を基に、各地域に適した政策提案を行います。",
+        linkText:"地域間比較を見る",
+        linkUrl:"/compare",
+        pngUrl:"/compare_image.png"
+    },
+
+     ];
 export type IntroData = {
     id: number;
     title: string;
