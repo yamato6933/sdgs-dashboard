@@ -1,0 +1,163 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 650px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"font": {"size": 30}, "group": "\u6559\u80b2\u57fa\u76e4", "id": "\u7fa9\u52d9\u6559\u80b2\u5b66\u6821\u5f53\u305f\u308a\u5150\u7ae5\u30fb\u751f\u5f92\u6570", "label": "\u7fa9\u52d9\u6559\u80b2\u5b66\u6821\u5f53\u305f\u308a\u5150\u7ae5\u30fb\u751f\u5f92\u6570", "shape": "dot", "size": 40, "title": "\u7fa9\u52d9\u6559\u80b2\u5b66\u6821\u5f53\u305f\u308a\u5150\u7ae5\u30fb\u751f\u5f92\u6570\uff08\u30b0\u30eb\u30fc\u30d7: \u6559\u80b2\u57fa\u76e4\uff09"}, {"font": {"size": 30}, "group": "\u6559\u80b2\u57fa\u76e4", "id": "\u6559\u54e1\u5f53\u305f\u308a\u5150\u7ae5\u30fb\u751f\u5f92\u6570", "label": "\u6559\u54e1\u5f53\u305f\u308a\u5150\u7ae5\u30fb\u751f\u5f92\u6570", "shape": "dot", "size": 40, "title": "\u6559\u54e1\u5f53\u305f\u308a\u5150\u7ae5\u30fb\u751f\u5f92\u6570\uff08\u30b0\u30eb\u30fc\u30d7: \u6559\u80b2\u57fa\u76e4\uff09"}, {"font": {"size": 30}, "group": "\u6559\u80b2\u57fa\u76e4", "id": "\u6b73\u51fa\u306b\u5360\u3081\u308b\u6559\u80b2\u8cbb\u6bd4\u7387", "label": "\u6b73\u51fa\u306b\u5360\u3081\u308b\u6559\u80b2\u8cbb\u6bd4\u7387", "shape": "dot", "size": 40, "title": "\u6b73\u51fa\u306b\u5360\u3081\u308b\u6559\u80b2\u8cbb\u6bd4\u7387\uff08\u30b0\u30eb\u30fc\u30d7: \u6559\u80b2\u57fa\u76e4\uff09"}, {"font": {"size": 30}, "group": "\u6559\u80b2\u7523\u696d", "id": "\u4e8b\u696d\u6240\u5f53\u305f\u308a\u7d14\u4ed8\u52a0\u4fa1\u5024\u984d\uff08\u6559\u80b2\u3001\u5b66\u7fd2\u652f\u63f4\u696d\uff09", "label": "\u4e8b\u696d\u6240\u5f53\u305f\u308a\u7d14\u4ed8\u52a0\u4fa1\u5024\u984d\uff08\u6559\u80b2\u3001\u5b66\u7fd2\u652f\u63f4\u696d\uff09", "shape": "dot", "size": 40, "title": "\u4e8b\u696d\u6240\u5f53\u305f\u308a\u7d14\u4ed8\u52a0\u4fa1\u5024\u984d\uff08\u6559\u80b2\u3001\u5b66\u7fd2\u652f\u63f4\u696d\uff09\uff08\u30b0\u30eb\u30fc\u30d7: \u6559\u80b2\u7523\u696d\uff09"}, {"font": {"size": 30}, "group": "\u6559\u80b2\u7523\u696d", "id": "\u5f93\u696d\u80051\u4eba\u5f53\u305f\u308a\u7d14\u4ed8\u52a0\u4fa1\u5024\u984d\uff08\u6559\u80b2\u3001\u5b66\u7fd2\u652f\u63f4\u696d\uff09", "label": "\u5f93\u696d\u80051\u4eba\u5f53\u305f\u308a\u7d14\u4ed8\u52a0\u4fa1\u5024\u984d\uff08\u6559\u80b2\u3001\u5b66\u7fd2\u652f\u63f4\u696d\uff09", "shape": "dot", "size": 40, "title": "\u5f93\u696d\u80051\u4eba\u5f53\u305f\u308a\u7d14\u4ed8\u52a0\u4fa1\u5024\u984d\uff08\u6559\u80b2\u3001\u5b66\u7fd2\u652f\u63f4\u696d\uff09\uff08\u30b0\u30eb\u30fc\u30d7: \u6559\u80b2\u7523\u696d\uff09"}, {"font": {"size": 30}, "group": "\u7814\u7a76\u30fb\u5c02\u9580\u30b5\u30fc\u30d3\u30b9", "id": "\u7d14\u4ed8\u52a0\u4fa1\u5024\u984d\u5272\u5408\uff08\u5b66\u8853\u7814\u7a76\u3001\u5c02\u9580\u30fb\u6280\u8853\u30b5\u30fc\u30d3\u30b9\u696d\uff09", "label": "\u7d14\u4ed8\u52a0\u4fa1\u5024\u984d\u5272\u5408\uff08\u5b66\u8853\u7814\u7a76\u3001\u5c02\u9580\u30fb\u6280\u8853\u30b5\u30fc\u30d3\u30b9\u696d\uff09", "shape": "dot", "size": 40, "title": "\u7d14\u4ed8\u52a0\u4fa1\u5024\u984d\u5272\u5408\uff08\u5b66\u8853\u7814\u7a76\u3001\u5c02\u9580\u30fb\u6280\u8853\u30b5\u30fc\u30d3\u30b9\u696d\uff09\uff08\u30b0\u30eb\u30fc\u30d7: \u7814\u7a76\u30fb\u5c02\u9580\u30b5\u30fc\u30d3\u30b9\uff09"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "font": {"size": 20}, "from": "\u7fa9\u52d9\u6559\u80b2\u5b66\u6821\u5f53\u305f\u308a\u5150\u7ae5\u30fb\u751f\u5f92\u6570", "label": "\u5b66\u6821\u306e\u9069\u6b63\u898f\u6a21\u30fb\u9069\u6b63\u914d\u7f6e\uff0f\u901a\u5b66\u533a\u57df\u898b\u76f4\u3057", "smooth": true, "title": "\u5b66\u6821\u306e\u9069\u6b63\u898f\u6a21\u30fb\u9069\u6b63\u914d\u7f6e\uff0f\u901a\u5b66\u533a\u57df\u898b\u76f4\u3057", "to": "\u6559\u54e1\u5f53\u305f\u308a\u5150\u7ae5\u30fb\u751f\u5f92\u6570"}, {"arrows": "to", "font": {"size": 20}, "from": "\u6559\u54e1\u5f53\u305f\u308a\u5150\u7ae5\u30fb\u751f\u5f92\u6570", "label": "\u6559\u54e1\u52a0\u914d\u30fb\u696d\u52d9\u6539\u5584\u306e\u305f\u3081\u306e\u6559\u80b2\u8cbb\u91cd\u70b9\u5316", "smooth": true, "title": "\u6559\u54e1\u52a0\u914d\u30fb\u696d\u52d9\u6539\u5584\u306e\u305f\u3081\u306e\u6559\u80b2\u8cbb\u91cd\u70b9\u5316", "to": "\u6b73\u51fa\u306b\u5360\u3081\u308b\u6559\u80b2\u8cbb\u6bd4\u7387"}, {"arrows": "to", "font": {"size": 20}, "from": "\u6b73\u51fa\u306b\u5360\u3081\u308b\u6559\u80b2\u8cbb\u6bd4\u7387", "label": "\u516c\u6c11\u9023\u643a\u306b\u3088\u308b\u6559\u80b2\u30b5\u30fc\u30d3\u30b9\u9ad8\u5ea6\u5316\uff08EdTech\u7b49\uff09", "smooth": true, "title": "\u516c\u6c11\u9023\u643a\u306b\u3088\u308b\u6559\u80b2\u30b5\u30fc\u30d3\u30b9\u9ad8\u5ea6\u5316\uff08EdTech\u7b49\uff09", "to": "\u4e8b\u696d\u6240\u5f53\u305f\u308a\u7d14\u4ed8\u52a0\u4fa1\u5024\u984d\uff08\u6559\u80b2\u3001\u5b66\u7fd2\u652f\u63f4\u696d\uff09"}, {"arrows": "to", "font": {"size": 20}, "from": "\u4e8b\u696d\u6240\u5f53\u305f\u308a\u7d14\u4ed8\u52a0\u4fa1\u5024\u984d\uff08\u6559\u80b2\u3001\u5b66\u7fd2\u652f\u63f4\u696d\uff09", "label": "\u6559\u80b2\u4e8b\u696d\u8005\u306eDX\uff08CRM\u30fb\u30aa\u30f3\u30e9\u30a4\u30f3\u5316\uff09", "smooth": true, "title": "\u6559\u80b2\u4e8b\u696d\u8005\u306eDX\uff08CRM\u30fb\u30aa\u30f3\u30e9\u30a4\u30f3\u5316\uff09", "to": "\u5f93\u696d\u80051\u4eba\u5f53\u305f\u308a\u7d14\u4ed8\u52a0\u4fa1\u5024\u984d\uff08\u6559\u80b2\u3001\u5b66\u7fd2\u652f\u63f4\u696d\uff09"}, {"arrows": "to", "font": {"size": 20}, "from": "\u6b73\u51fa\u306b\u5360\u3081\u308b\u6559\u80b2\u8cbb\u6bd4\u7387", "label": "\u5927\u5b66\u9023\u643a\u30fb\u5c02\u9580\u6280\u8853\u30b5\u30fc\u30d3\u30b9\u696d\u306e\u80b2\u6210", "smooth": true, "title": "\u5927\u5b66\u9023\u643a\u30fb\u5c02\u9580\u6280\u8853\u30b5\u30fc\u30d3\u30b9\u696d\u306e\u80b2\u6210", "to": "\u7d14\u4ed8\u52a0\u4fa1\u5024\u984d\u5272\u5408\uff08\u5b66\u8853\u7814\u7a76\u3001\u5c02\u9580\u30fb\u6280\u8853\u30b5\u30fc\u30d3\u30b9\u696d\uff09"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "barnesHut": {
+            "avoidOverlap": 0,
+            "centralGravity": 0.3,
+            "damping": 0.09,
+            "gravitationalConstant": -80000,
+            "springConstant": 0.001,
+            "springLength": 250
+        },
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
