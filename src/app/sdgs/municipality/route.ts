@@ -11,7 +11,7 @@ export async function GET(request:Request) {
         const search = searchParams.get("search");
         const municipality = searchParams.get('municipality');
 
-        const dbPath = path.resolve(process.cwd(), 'data', 'sdgs_scores.db');
+        const dbPath = path.resolve(process.cwd(), 'data', 'new_sdgs_scores.db');
         const db = new Database (dbPath,{readonly:true});
 
         if (municipality) {
