@@ -24,11 +24,11 @@ export const SidebarData = [
     {
         title: "Policy",
         icon: PolicyIcon,
-        link: "/policy",
+        link: "/policymaking",
     },
     {
         title: "Map",
         icon: RoomIcon,
-        link: "/map",
+        link: "/mapping",
     }
 ]
