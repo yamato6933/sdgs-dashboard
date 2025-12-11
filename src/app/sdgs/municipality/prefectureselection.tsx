@@ -1,11 +1,11 @@
 "use client"
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState,useEffect,useRef} from "react";
 import { getAllRegions, getPrefectureByRegion, getRegionByPrefecture, type RegionData } from './region-mapping';
 import { MunicipalityData } from '../types';
 import { InputRegion } from "@/app/components/InputRegion";
 import { DropdownRef } from "@/app/components/DropdownRef";
 
-export type PrefectureData = Record<string, MunicipalityData[]>;
+export type PrefectureData = Record<string,MunicipalityData[]>;
 
 export interface PrefectureSelectionProps {
   onMunicipalitySelect: (municipality: MunicipalityData | null) => void;
@@ -17,12 +17,12 @@ export interface PrefectureSelectionProps {
 }
 
 //APIから市区町村のデータを取得
-const fetchMunicipality = async (search?: string): Promise<MunicipalityData[]> => {
-  try {
+const fetchMunicipality = async(search?:string): Promise<MunicipalityData[]> =>{
+  try{
     const url = search
       ? `/sdgs/municipality?search=${encodeURIComponent(search)}`
       : "/sdgs/municipality";
-    const response = await fetch(url);
+      const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to fetch municipalities');
     return response.json();
   } catch (error) {
@@ -32,9 +32,9 @@ const fetchMunicipality = async (search?: string): Promise<MunicipalityData[]> =
 }
 
 //市区町ごとの配列を都道府県ごとにグループ分け
-const groupByPrefecture = (municipalities: MunicipalityData[]): PrefectureData => {
-  return municipalities.reduce((acc, municipality) => {
-    if (!acc[municipality.prefecture]) {
+const groupByPrefecture = (municipalities:MunicipalityData[]): PrefectureData =>{
+  return municipalities.reduce((acc,municipality) => {
+    if(!acc[municipality.prefecture]){
       acc[municipality.prefecture] = [];
     }
     acc[municipality.prefecture].push(municipality);
@@ -50,7 +50,7 @@ export default function PrefectureSelection({
   placeholder = "選択してください",
   searchPlaceholder = "例: 渋谷区、横浜市、大阪..."
 
-}: PrefectureSelectionProps) {
+}:PrefectureSelectionProps){
   const [internalSelectedPrefecture, setInternalSelectedPrefecture] = useState(selectedPrefecture);
   const [internalSelectedMunicipality, setInternalSelectedMunicipality] = useState(selectedMunicipality);
 
@@ -78,12 +78,12 @@ export default function PrefectureSelection({
   useEffect(() => {
     const loadMunicipalities = async () => {
       setIsLoading(true);
-      try {
+      try{
         const municipalities = await fetchMunicipality();
         setMunicipalityData(groupByPrefecture(municipalities));
-      } catch (error) {
+      } catch(error) {
         console.error('Failed to load municipalities:', error);
-      } finally {
+      } finally{
         setIsLoading(false);
       }
     };
@@ -93,7 +93,7 @@ export default function PrefectureSelection({
 
   //デバウンス付きの検索機能
   useEffect(() => {
-    const handler = setTimeout(async () => {
+    const handler = setTimeout( async () => {
       if (searchQuery.trim() === "") {
         setSearchResults([]);
         setShowSearchResults(false);
@@ -107,19 +107,19 @@ export default function PrefectureSelection({
         return;
       }
 
-      try {
+      try{
         const results = await fetchMunicipality(searchQuery);
         console.log(`検索結果 "${searchQuery}":`, results.length, '件');
-        setSearchResults(results.slice(0, 10));
+        setSearchResults(results.slice(0,10));
         // 検索クエリがある場合は常にドロップダウンを表示（結果があってもなくても）
         setShowSearchResults(true);
 
-      } catch (error) {
+      }  catch (error) {
         console.error('Search failed:', error);
         setSearchResults([]);
         setShowSearchResults(false);
       }
-    }, 300);
+    },300);
 
     return () => clearTimeout(handler);
   }, [searchQuery, internalSelectedMunicipality, internalSelectedPrefecture]);
@@ -128,7 +128,7 @@ export default function PrefectureSelection({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        searchDropdownRef.current &&
+        searchDropdownRef.current && 
         !searchDropdownRef.current.contains(event.target as Node) &&
         searchInputRef.current &&
         !searchInputRef.current.contains(event.target as Node)
@@ -142,43 +142,43 @@ export default function PrefectureSelection({
   }, []);
   // 地方選択時に都道府県リストを更新
   useEffect(() => {
-    if (selectedRegion) {
+    if(selectedRegion){
       const prefectures = getPrefectureByRegion(selectedRegion);
       setAvailablePrefectures(prefectures);
       setInternalSelectedPrefecture("");
       setInternalSelectedMunicipality("");
       onMunicipalitySelect(null);
-    } else {
+    } else{
       setAvailablePrefectures(Object.keys(municipalityData));
     }
-  }, [selectedRegion, municipalityData]);
+  },[selectedRegion,municipalityData]);
 
   //都道府県変更時に市区町村をリセット
   useEffect(() => {
-    if (searchMethod === "select") {
+    if(searchMethod==="select"){
       setInternalSelectedMunicipality("");
       onMunicipalitySelect(null);
     }
-  }, [internalSelectedPrefecture, searchMethod]);
+  },[internalSelectedPrefecture,searchMethod]);
 
 
   //市区町村を選択した後の処理
-  const handleMunicipalityChange = (municipalityId: string) => {
+  const handleMunicipalityChange = (municipalityId:string) => {
     setInternalSelectedMunicipality(municipalityId);
-    if (municipalityId) {
+    if (municipalityId){
       const municipalityList = municipalityData[internalSelectedPrefecture];
       const municipality = municipalityList?.find(m => m.id === municipalityId);
-      if (municipality) {
+      if (municipality){
         onMunicipalitySelect(municipality);
       }
-    } else {
+    } else{
       onMunicipalitySelect(null);
     }
   };
 
 
   //市区町村が選択されたことをstateに報告
-  const handleSearchResultClick = (municipality: MunicipalityData) => {
+  const handleSearchResultClick = (municipality:MunicipalityData) =>{
     setInternalSelectedPrefecture(municipality.prefecture);
     setInternalSelectedMunicipality(municipality.id);
     setSearchQuery(`${municipality.prefecture} ${municipality.name}`);
@@ -188,20 +188,20 @@ export default function PrefectureSelection({
   };
 
   //地方が選択された時にstateに伝える
-  const handleRegionChange = (regionName: string) => {
+  const handleRegionChange = (regionName:string) =>{
     setSelectedRegion(regionName);
   };
 
   //検索方法の切り替え
-  const handleSearchMethodChange = (method: "select" | "search") => {
+  const handleSearchMethodChange = (method:"select"|"search") =>{
     setSearchMethod(method);
-    if (method === "search") {
+    if (method ==="search"){
       setSearchQuery("");
       setSearchResults([]);
       setShowSearchResults(false);
       setInternalSelectedMunicipality("");
       onMunicipalitySelect(null);
-    } else {
+    } else{
       setSearchQuery("");
       setSearchResults([]);
       setShowSearchResults(false);
@@ -209,41 +209,41 @@ export default function PrefectureSelection({
     }
   };
 
-  if (isLoading) {
-    return (
+  if(isLoading){
+    return(
       <div className={`flex items-center justify-center p-4 ${className}`}>
         <div className="text-gray-600">データを読み込み中です...</div>
       </div>
     );
   }
 
-  return (
-    <div className={`flex flex-col md:flex-row items-start md:items-center gap-4 ${className}`}>
+  return(
+    <div className={`flex items-center space-x-4 ${className}`}>
       {/*表示方法の切り替え*/}
       <div className="flex items-center space-x-2">
         <button
           onClick={() => handleSearchMethodChange("select")}
-          className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${searchMethod === "select" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`} >
-          選択
+          className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+            searchMethod ==="select" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`} >
+            選択
         </button>
         <button
           onClick={() => handleSearchMethodChange("search")}
-          className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${searchMethod === "search" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`} >
-          検索
+          className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+            searchMethod ==="search" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`} >
+            検索
         </button>
       </div>
 
-      {searchMethod === "search" && (
+      {searchMethod ==="search" && (
         <div className="relative">
-          <div className="w-full">
-            <InputRegion {...{ searchInputRef, searchQuery, setSearchQuery, showSearchResults, setShowSearchResults, searchPlaceholder }} />
-          </div>
-          {showSearchResults && searchResults.length > 0 && (
-            <DropdownRef {...{ searchDropdownRef, searchResults, handleSearchResultClick }} />
+          <InputRegion {...{searchInputRef, searchQuery, setSearchQuery, showSearchResults, setShowSearchResults, searchPlaceholder}} />
+          {showSearchResults && searchResults.length > 0 &&(
+          <DropdownRef {...{searchDropdownRef,searchResults,handleSearchResultClick}}/>
           )}
-          {showSearchResults && searchQuery && searchResults.length === 0 && (
+          {showSearchResults && searchQuery && searchResults.length === 0 &&(
             <div className="absolute top-full right-0 mt-1 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-10 p-4 text-center text-gray-500">
               「{searchQuery}」に一致する市区町村が見つかりませんでした
             </div>
@@ -252,49 +252,49 @@ export default function PrefectureSelection({
       )}
 
       {/*選択モード */}
-      {searchMethod === "select" && (
-        <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-          {/*地方選択 */}
-          <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 w-full md:w-auto">
-            <label className="text-sm font-medium text-gray-700 whitespace-nowrap">地方:</label>
-            <select
-              value={selectedRegion}
-              onChange={(e) => handleRegionChange(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option value="">全国</option>
-              {regions.map(region => (
-                <option key={region.name} value={region.name}>
-                  {region.description}
-                </option>
+      {searchMethod === "select" &&(
+        <>
+        {/*地方選択 */}
+        <div className="flex items-center space-x-2">
+          <label className="text-sm font-medium text-gray-700 whitespace-nowrap">地方:</label>
+          <select
+          value={selectedRegion}
+          onChange={(e) => handleRegionChange(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <option value="">全国</option>
+            {regions.map(region => (
+              <option key={region.name} value={region.name}>
+                {region.description}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/*都道府県選択 */}
+        <div className="flex items-center space-x-2">
+          <label className="text-sm font-medium text-gray-700 whitespace-nowrap">都道府県:</label>
+          <select 
+            value={internalSelectedPrefecture}
+            onChange={(e) => setInternalSelectedPrefecture(e.target.value)}
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            disabled={!selectedRegion && Object.keys(municipalityData).length ===0}>
+              <option value="">{placeholder}</option>
+              {(selectedRegion ? availablePrefectures: Object.keys(municipalityData))
+              .filter(prefecture => municipalityData[prefecture])
+              .map(prefecture => (
+                <option key={prefecture} value={prefecture}>{prefecture}</option>
               ))}
             </select>
-          </div>
+        </div>
 
-          {/*都道府県選択 */}
-          <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-gray-700 whitespace-nowrap">都道府県:</label>
-            <select
-              value={internalSelectedPrefecture}
-              onChange={(e) => setInternalSelectedPrefecture(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              disabled={!selectedRegion && Object.keys(municipalityData).length === 0}>
-              <option value="">{placeholder}</option>
-              {(selectedRegion ? availablePrefectures : Object.keys(municipalityData))
-                .filter(prefecture => municipalityData[prefecture])
-                .map(prefecture => (
-                  <option key={prefecture} value={prefecture}>{prefecture}</option>
-                ))}
-            </select>
-          </div>
-
-          {/*市区町村選択 */}
-          <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-gray-700 whitespace-nowrap">市区町村:</label>
-            <select
-              value={internalSelectedMunicipality}
-              onChange={(e) => handleMunicipalityChange(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              disabled={!internalSelectedPrefecture}>
+        {/*市区町村選択 */}
+        <div className="flex items-center space-x-2">
+          <label className="text-sm font-medium text-gray-700 whitespace-nowrap">市区町村:</label>
+          <select 
+            value={internalSelectedMunicipality}
+            onChange={(e) => handleMunicipalityChange(e.target.value)}
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            disabled={!internalSelectedPrefecture}>
               <option value="">{placeholder}</option>
               {municipalityData[internalSelectedPrefecture]?.map(municipality => (
                 <option key={municipality.id} value={municipality.id}>
@@ -302,8 +302,8 @@ export default function PrefectureSelection({
                 </option>
               ))}
             </select>
-          </div>
         </div>
+        </>
       )}
     </div>
   );
