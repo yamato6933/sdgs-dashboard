@@ -1,4 +1,3 @@
-import { title } from "process"
 import HomeIcon from '@mui/icons-material/Home';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import SearchIcon from '@mui/icons-material/Search';
@@ -24,11 +23,11 @@ export const SidebarData = [
     {
         title: "Policy",
         icon: PolicyIcon,
-        link: "/policy",
+        link: "/policymaking",
     },
     {
         title: "Map",
         icon: RoomIcon,
-        link: "/map",
+        link: "/mapping",
     }
 ]
